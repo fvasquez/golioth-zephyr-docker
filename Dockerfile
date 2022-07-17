@@ -117,3 +117,5 @@ ARG ZEPHYR_SDK_INSTALL_DIR=/opt/zephyr-sdk-${ZEPHYR_SDK_VERSION}
 COPY --from=build ${ZEPHYR_SDK_INSTALL_DIR} ${ZEPHYR_SDK_INSTALL_DIR}
 
 RUN /opt/zephyr-sdk-${ZEPHYR_SDK_VERSION}/setup.sh -c
+
+ENTRYPOINT ["west"]
