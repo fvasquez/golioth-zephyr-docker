@@ -1,4 +1,5 @@
 FROM ubuntu:focal-20220531 AS common
+WORKDIR /workdir
 
 CMD ["/bin/bash"]
 

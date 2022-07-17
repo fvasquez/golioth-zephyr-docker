@@ -2,17 +2,9 @@
 
 [![Dev Container](https://github.com/beriberikix/golioth-zephyr-docker/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/beriberikix/golioth-zephyr-docker/actions/workflows/docker-publish.yml)
 
-Develop Golioth applications with Zephyr locally using Docker. No other tools required*!
+Develop Golioth applications with Zephyr locally using Docker. No other tools required*! The container includes all the tools needed to fetch, build and flash, while the application source code stays on the local machine.
 
 *_mostly_, depends on OS.
-
-# Important build arguments
-
-* ARCHITECTURE - Architecture for the docker container. Not to be confused with target architecture.
-* ZEPHYR_SDK_VERSION - SDK version. Must be 0.14.1 or later.
-* ZEPHYR_VERSION - Zephyr version. Can be a tag or branch, including `main`
-
-If some or none of the arguments are missing the build will default to the latest stable version.
 
 # Supported targets
 
@@ -29,7 +21,54 @@ Currently the container includes compilers for the following targets:
 _To build an image for v3.1.0 and Arm Cortex-M targets:_
 
 ```
-docker build --build-arg ARCHITECTURE=x86_64 --build-arg ZEPHYR_SDK_VERSION=0.14.2 --build-arg ZEPHYR_VERSION=v3.1.0 -t golioth-zephyr:v3.1.0 .
+docker build --build-arg ARCHITECTURE=x86_64 --build-arg ZEPHYR_SDK_VERSION=0.14.2 --build-arg ZEPHYR_VERSION=v3.1.0 -t golioth-zephyr:v3.1.0_0.14.2 .
 ```
 
 Use `--build-arg ZEPHYR_VERSION=main` to use upstream Zephyr.
+
+## Important build arguments
+
+* ARCHITECTURE - Architecture for the docker container. Not to be confused with target architecture.
+* ZEPHYR_SDK_VERSION - SDK version. Must be 0.14.1 or later.
+* ZEPHYR_VERSION - Zephyr version. Can be a tag or branch, including `main`
+
+If some or none of the arguments are missing the build will default to the latest stable version.
+
+# Develop with Docker
+
+## Using local image
+
+It's recommended that to build Docker images locally.
+
+```
+git clone https://github.com/beriberikix/golioth-zephyr-docker
+cd golioth-zephyr-docker
+docker build --build-arg ARCHITECTURE=x86_64 --build-arg ZEPHYR_SDK_VERSION=0.14.2 --build-arg ZEPHYR_VERSION=v3.1.0 -t golioth-zephyr:main_0.14.2 .
+```
+
+This container is optimized for developing standalone applications. We'll use https://github.com/beriberikix/golioth-zephyr-hello as an example, but it should work with your own applications.
+
+```
+mkdir build-with-docker && cd build-with-docker
+docker run --rm -v ${PWD}:/workdir golioth-zephyr:main_0.14.2 /bin/bash -c '\
+    west init -m https://github.com/beriberikix/golioth-zephyr-hello && \
+    west update'
+```
+
+Now build the sample.
+
+```
+docker run --rm -v ${PWD}:/workdir golioth-zephyr:main_0.14.2 /bin/bash -c 'cd app && west build -b esp32 -p'
+```
+
+
+You can also interact with the container as if it was a virtual machine.
+
+```
+docker run -it --name zephyr -v ${PWD}:/workdir \
+    golioth-zephyr:main_0.14.2 /bin/bash
+```
+
+## Using pre-built image
+
+TODO
