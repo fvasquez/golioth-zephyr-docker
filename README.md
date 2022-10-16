@@ -2,26 +2,23 @@
 
 [![Dev Container](https://github.com/beriberikix/golioth-zephyr-docker/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/beriberikix/golioth-zephyr-docker/actions/workflows/docker-publish.yml)
 
-Develop Golioth applications with Zephyr locally using Docker. No other tools required*! The container includes all the tools needed to fetch, build and flash, while the application source code stays on the local machine.
+Develop Golioth applications with Zephyr locally using Docker. No other tools required* besides `docker` & `git`! The container includes all the tools needed to fetch, build and flash, while the application source code stays on the local machine.
 
 *_mostly_, depends on OS.
 
 # Supported targets
 
 Currently the container includes compilers for the following targets:
-* aarch64-zephyr-elf
 * arm-zephyr-eabi
-* riscv64-zephyr-elf
-* x86_64-zephyr-elf
 * xtensa-espressif_esp32_zephyr-elf
 * xtensa-espressif_esp32s2_zephyr-elf
 
 # Building with Docker CLI
 
-_To build an image for v3.1.0 and Arm Cortex-M targets:_
+_To build an image for v3.2.0 and Arm Cortex-M targets:_
 
 ```
-docker build --build-arg ARCHITECTURE=x86_64 --build-arg ZEPHYR_SDK_VERSION=0.14.2 --build-arg ZEPHYR_VERSION=v3.1.0 -t golioth-zephyr:v3.1.0_0.14.2 .
+docker build --build-arg ARCHITECTURE=x86_64 --build-arg ZEPHYR_SDK_VERSION=0.15.1 --build-arg ZEPHYR_VERSION=v3.2.0 -t golioth-zephyr:v3.2.0_0.15.1SDK .
 ```
 
 ## Important build arguments
@@ -52,14 +49,14 @@ This container is optimized for developing standalone applications. We'll use ht
 
 ```
 mkdir build-with-docker && cd build-with-docker
-docker run --rm -v ${PWD}:/workdir golioth-zephyr:latest init -m https://github.com/beriberikix/golioth-zephyr-hello
-docker run --rm -v ${PWD}:/workdir golioth-zephyr:latest update
+docker run --rm -v ${PWD}:/workdir golioth-zephyr:latest west init -m https://github.com/beriberikix/golioth-zephyr-hello
+docker run --rm -v ${PWD}:/workdir golioth-zephyr:latest west update
 ```
 
 You can also create an alias to reduce typing.
 
 ```
-alias west="docker run --rm -v ${PWD}:/workdir golioth-zephyr:latest"
+alias west="docker run --rm -v ${PWD}:/workdir golioth-zephyr:latest west"
 west update
 ```
 
