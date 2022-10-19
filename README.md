@@ -68,4 +68,29 @@ west build -b esp32 app -p
 
 ## Using pre-built image
 
-TODO
+Fetch the latest pre-built image.
+
+```
+docker pull ghcr.io/beriberikix/golioth-zephyr:v3.2.0-0.15.1sdk
+```
+
+Alias `west` to reduce typing.
+
+```
+alias west="docker run --rm -v ${PWD}:/workdir -w /workdir ghcr.io/beriberikix/golioth-zephyr:v3.2.0-0.15.1sdk west"
+```
+
+Create a local working directory and initialize a Zephyr workspace with Golioth.
+
+```
+mkdir build-with-docker && cd build-with-docker
+west init -m https://github.com/golioth/golioth-zephyr-sdk.git --mf west-zephyr.yml
+west update
+```
+
+Build the Golioth `hello` sample.
+
+```
+cd modules/lib/golioth/
+west build -b esp32 samples/hello -p
+```
