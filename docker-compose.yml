@@ -1,0 +1,12 @@
+services:
+  west:
+    image: st8l3ss/zephyr-sdk-x86_64:latest
+    container_name: golioth
+    volumes:
+      - ~/projects:/root
+      - ~/Downloads:/root/Desktop/Downloads
+    entrypoint:
+      - bash
+    tty: true
+    stdin_open: true
+

@@ -1,31 +1,28 @@
-FROM debian:stable-slim AS common
-
-ARG ZEPHYR_VERSION=v3.2.0
-ENV ZEPHYR_VERSION=${ZEPHYR_VERSION}
+FROM debian:stable-slim AS common 
 
 RUN \
   apt-get -y update \
   && apt-get -y install --no-install-recommends \
   device-tree-compiler \
   git \
+  ninja-build \
   python3 \
   python3-pip \
-  python3-wheel \
+  python3-venv \
   && pip3 install cmake \
-  && pip3 install west \
-  && pip3 install \
-  -r https://raw.githubusercontent.com/zephyrproject-rtos/zephyr/${ZEPHYR_VERSION}/scripts/requirements-base.txt \
   && apt-get remove -y --purge \
   python3-pip \
-  python3-wheel \
   && apt-get clean \
-  && rm -rf /var/lib/apt/lists/*
+  && rm -rf /var/lib/apt/lists/* \
+  && mkdir -p /root/Desktop/Downloads
 
 FROM common AS toolchain
 
 ARG ARCHITECTURE=x86_64
 ARG ZEPHYR_SDK_VERSION=0.15.1
 ARG ZEPHYR_SDK_INSTALL_DIR=/opt/zephyr-sdk
+
+WORKDIR /root
 
 RUN \
   export sdk_file_name="zephyr-sdk-${ZEPHYR_SDK_VERSION}_linux-$(uname -m)_minimal.tar.gz" \
@@ -43,3 +40,4 @@ RUN \
   file wget xz-utils \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
+
