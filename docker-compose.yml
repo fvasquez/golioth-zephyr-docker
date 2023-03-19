@@ -9,4 +9,3 @@ services:
       - bash
     tty: true
     stdin_open: true
-

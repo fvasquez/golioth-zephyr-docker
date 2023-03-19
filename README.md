@@ -1,96 +1,72 @@
-# Docker container for Golioth + Zephyr
+# Docker container for Golioth & Zephyr
 
-[![Dev Container](https://github.com/beriberikix/golioth-zephyr-docker/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/beriberikix/golioth-zephyr-docker/actions/workflows/docker-publish.yml)
+Develop Golioth applications with Zephyr on macOS using Docker Desktop. No other tools required besides Docker Desktop and Git! The container has everything needed to fetch and build, while the application source code stays on your host machine.
 
-Develop Golioth applications with Zephyr locally using Docker. No other tools required* besides `docker` & `git`! The container includes all the tools needed to fetch, build and flash, while the application source code stays on the local machine.
+  * [Build](#build)
+  * [Install](#install)
+  * [Develop](#develop)
 
-*_mostly_, depends on OS.
+Container image releases of this project are available on [Docker Hub](https://hub.docker.com/repository/docker/st8l3ss/zephyr-sdk-x86_64/general).
 
-# Supported targets
+## Build
 
-Currently the container includes compilers for the following targets:
-* arm-zephyr-eabi
-* xtensa-espressif_esp32_zephyr-elf
-* xtensa-espressif_esp32s2_zephyr-elf
+To build this project, make sure you have Git and Docker installed on your host machine.
 
-# Building with Docker CLI
+Clone the repo and buikd a release of the container image:
 
-_To build an image for v3.2.0 and Arm Cortex-M targets:_
-
-```
-docker build --build-arg ARCHITECTURE=x86_64 --build-arg ZEPHYR_SDK_VERSION=0.15.1 --build-arg ZEPHYR_VERSION=v3.2.0 -t golioth-zephyr:v3.2.0_0.15.1SDK .
-```
-
-## Important build arguments
-
-* ARCHITECTURE - Architecture for the docker container. Not to be confused with target architecture.
-* ZEPHYR_SDK_VERSION - SDK version. Must be 0.14.1 or later.
-* ZEPHYR_VERSION - Zephyr version. Can be a tag or branch, including `main`
-
-If some or none of the arguments are missing the build will default to the latest stable version.
-
-```
-docker build -t golioth-zephyr:latest .
-```
-
-# Develop with Docker
-
-## Using local image
-
-It's recommended that to build Docker images locally.
-
-```
-git clone https://github.com/beriberikix/golioth-zephyr-docker
+``` shell
+git clone https://github.com/fvasquez/golioth-zephyr-docker .
 cd golioth-zephyr-docker
-docker build -t golioth-zephyr:latest .
+docker build --build-arg ARCHITECTURE=x86_64 --build-arg ZEPHYR_SDK_VERSION=0.15.2 -t zephyr-sdk-x86_64:v15.2 .
 ```
 
-This container is optimized for developing standalone applications. We'll use https://github.com/beriberikix/golioth-zephyr-hello as an example, but it should work with your own applications.
+This command builds an x86_64 container image for version 0.15.2 of the Zephyr SDK.
 
-```
-mkdir build-with-docker && cd build-with-docker
-docker run --rm -v ${PWD}:/workdir golioth-zephyr:latest west init -m https://github.com/beriberikix/golioth-zephyr-hello
-docker run --rm -v ${PWD}:/workdir golioth-zephyr:latest west update
-```
+Both build arguments are optional:
 
-You can also create an alias to reduce typing.
+* ARCHITECTURE - CPU architecture for the Docker container. Not to be confused with the target architecture for Zephyr.
+* ZEPHYR_SDK_VERSION - SDK version. Must be 0.14.1 or later.
 
-```
-alias west="docker run --rm -v ${PWD}:/workdir golioth-zephyr:latest west"
-west update
-```
+If either build argument is missing from the command line the build defaults to the value defined inside the `Dodkerfile`.
 
-Now build the sample.
+## Install
 
-```
-west build -b esp32 app -p
-```
+To fetch and run this project, make sure you have Git and Docker Desktop installed on your host machine.
 
-## Using pre-built image
+Before running the container image, create a `projects` directory inside your home directory. This is where you will do all your Zephyr-related work.
 
-Fetch the latest pre-built image.
+Clone the repo and start the `west` service:
 
-```
-docker pull ghcr.io/beriberikix/golioth-zephyr:v3.2.0-0.15.1sdk
+``` shell
+git clone https://github.com/fvasquez/golioth-zephyr-docker .
+cd golioth-zephyr-docker
+docker compose up -d
 ```
 
-Alias `west` to reduce typing.
+A container named `golioth` should now appear as "Running" in Docker Desktop.
+
+To open a terminal inside the running container:
 
 ```
-alias west="docker run --rm -v ${PWD}:/workdir -w /workdir ghcr.io/beriberikix/golioth-zephyr:v3.2.0-0.15.1sdk west"
+docker exec -it golioth /bin/bash
 ```
 
-Create a local working directory and initialize a Zephyr workspace with Golioth.
+Alternatively, the `west` service can be started from within VS Code as a Dev Container:
+
+1. Launch VS Code.
+2. Slect *Open Folder ...* from the *File* menu.
+3. Browse for the directory where you cloned this repo and click the *Open* button.
+3. Select *Command Palette ...* from the *View* menu.
+5. Enter *Dev Containers: Reopen in Container* in the Command Palette.
+
+Once a connection with the Dev Container has been established you can open a *New Terminal* inside the running container from within VS Code.
+
+## Develop
+
+The `projects` directory is mounted as `/root` inside the container. This way you can execute Git commands and use VS Code to edit source code on your host machine.
+
+All project builds are done inside the container as `root` using Python virtual environments. The binary artifacts are then bundled and saved to your `Downloads` directory on your host machine for flashing like so:
 
 ```
-mkdir build-with-docker && cd build-with-docker
-west init -m https://github.com/golioth/golioth-zephyr-sdk.git --mf west-zephyr.yml
-west update
-```
-
-Build the Golioth `hello` sample.
-
-```
-cd modules/lib/golioth/
-west build -b esp32 samples/hello -p
+west kasm download
 ```

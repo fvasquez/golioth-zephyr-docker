@@ -1,4 +1,4 @@
-FROM debian:stable-slim AS common 
+FROM debian:stable-slim AS common
 
 RUN \
   apt-get -y update \
@@ -40,4 +40,3 @@ RUN \
   file wget xz-utils \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
-
