@@ -15,7 +15,7 @@ To build this project, make sure you have Git and Docker installed on your host 
 Clone the repo and buikd a release of the container image:
 
 ``` shell
-git clone https://github.com/fvasquez/golioth-zephyr-docker .
+git clone https://github.com/beriberikix/golioth-zephyr-docker .
 cd golioth-zephyr-docker
 docker build --build-arg ARCHITECTURE=x86_64 --build-arg ZEPHYR_SDK_VERSION=0.15.2 -t zephyr-sdk-x86_64:v15.2 .
 ```
@@ -38,7 +38,7 @@ Before running the container image, create a `projects` directory inside your ho
 Clone the repo and start the `west` service:
 
 ``` shell
-git clone https://github.com/fvasquez/golioth-zephyr-docker .
+git clone https://github.com/beriberikix/golioth-zephyr-docker .
 cd golioth-zephyr-docker
 docker compose up -d
 ```
